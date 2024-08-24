@@ -1,14 +1,14 @@
-# es necesario ejecutar el siguiente comando antes de ejecutar el programa pip install pyttsx3
 import tkinter as tk
 from tkinter import filedialog, Text
 import pyttsx3
 import os
+import PyPDF2
 
 # inicializar el motor de pyttsx3
 engine = pyttsx3.init()
 
 # configurar idioma de la voz 
-engine.setProperty('voice', 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ES-MX_SABINA_11.0')
+engine.setProperty('voice', 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\TTS_MS_ES-MX_SABINA_11.0')
 
 # configurar opciones de voz 
 engine.setProperty('rate', 120)  # velocidad
@@ -23,14 +23,26 @@ def convertir_a_voz():
     engine.runAndWait()
     os.system("start ultima_voz_creada.mp3")
 
-# funcion para subir y leer txt
+# funcion para subir y leer archivos de texto y pdf
 def cargar_archivo():
-    archivo = filedialog.askopenfilename(title="Seleccionar archivo", filetypes=(("Archivos de texto", "*.txt"),))
+    archivo = filedialog.askopenfilename(
+        title="seleccionar archivo", 
+        filetypes=(("archivos de texto", "*.txt"), ("archivos pdf", "*.pdf"))
+    )
     if archivo:
-        with open(archivo, 'r', encoding='utf-8') as file:
-            contenido = file.read()
-            text_area.delete("1.0", tk.END)
-            text_area.insert(tk.END, contenido)
+        extension = os.path.splitext(archivo)[1].lower()
+        contenido = ""
+        if extension == ".txt":
+            with open(archivo, 'r', encoding='utf-8') as file:
+                contenido = file.read()
+        elif extension == ".pdf":
+            with open(archivo, 'rb') as file:
+                lector_pdf = PyPDF2.PdfReader(file)
+                for pagina in lector_pdf.pages:
+                    contenido += pagina.extract_text()
+        
+        text_area.delete("1.0", tk.END)
+        text_area.insert(tk.END, contenido)
 
 # crear la gui
 root = tk.Tk()
@@ -44,9 +56,9 @@ text_area.pack(pady=20)
 convertir_boton = tk.Button(root, text="convertir a voz", command=convertir_a_voz)
 convertir_boton.pack(pady=10)
 
-# boton subir archivo txt
+# boton subir archivo
 cargar_boton = tk.Button(root, text="cargar archivo", command=cargar_archivo)
 cargar_boton.pack(pady=10)
 
-# inicar el programa y mantener activo
+# iniciar el programa y mantener activo
 root.mainloop()
