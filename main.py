@@ -32,6 +32,16 @@ def cargar_archivo():
             text_area.delete("1.0", tk.END)
             text_area.insert(tk.END, contenido)
 
+# funcion para guardar como txt
+def guardar_como_txt():
+    texto = text_area.get("1.0","end-1c")
+    archivo_salida = filedialog.asksaveasfilename(defaultextension=".txt",filetypes=[("Archivos de texto","*.txt")])
+    if archivo_salida:
+        with open(archivo_salida,"w", encoding='utf-8') as file:
+            file.write(texto)
+
+
+
 # crear la gui
 root = tk.Tk()
 root.title("texto a voz")
@@ -43,6 +53,10 @@ text_area.pack(pady=20)
 # boton convertir
 convertir_boton = tk.Button(root, text="convertir a voz", command=convertir_a_voz)
 convertir_boton.pack(pady=10)
+
+# boton guardar como archivo de texto 
+cargar_boton = tk.Button(root, text="Guardar como txt", command=guardar_como_txt)
+cargar_boton.pack(pady=10)
 
 # boton subir archivo txt
 cargar_boton = tk.Button(root, text="cargar archivo", command=cargar_archivo)
