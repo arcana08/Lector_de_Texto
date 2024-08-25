@@ -50,3 +50,5 @@ cargar_boton.pack(pady=10)
 
 # inicar el programa y mantener activo
 root.mainloop()
+
+
